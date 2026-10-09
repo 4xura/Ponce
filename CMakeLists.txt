@@ -28,7 +28,21 @@ file(GLOB PONCE_HEADER_FILES
     src/*.hpp
 )
 
-# Check if 32-bit library exists (SDK 9.2+ doesn't have it)
+# Accept both the SDK repository root and an extracted SDK's src directory.
+set(IDASDK_ROOT_DIR "" CACHE PATH "Path to IDA SDK root (include/ or src/include/)")
+if(NOT IDASDK_ROOT_DIR)
+    message(FATAL_ERROR "You should set IDASDK_ROOT_DIR to the IDA SDK path")
+endif()
+if(EXISTS "${IDASDK_ROOT_DIR}/src/include/ida.hpp")
+    set(IDASDK_ROOT_DIR "${IDASDK_ROOT_DIR}/src")
+endif()
+set(IDA_INCLUDE_DIR "${IDASDK_ROOT_DIR}/include")
+file(STRINGS "${IDA_INCLUDE_DIR}/pro.h" sdk_version_line
+    REGEX "^#define IDA_SDK_VERSION[ \t]+[0-9]+")
+string(REGEX MATCH "[0-9]+$" sdk_version "${sdk_version_line}")
+message(STATUS "Building Ponce for IDA SDK ${sdk_version}")
+
+# IDA 9 uses one plugin for both 32-bit and 64-bit databases.
 if(WIN32)
     set(ida32_lib_path "${IDASDK_ROOT_DIR}/lib/x64_win_vc_32/ida.lib")
 elseif(APPLE)
@@ -37,7 +51,7 @@ elseif(UNIX)
     set(ida32_lib_path "${IDASDK_ROOT_DIR}/lib/x64_linux_gcc_32/libida.so")
 endif()
 
-if(EXISTS "${ida32_lib_path}")
+if(sdk_version LESS 900 AND EXISTS "${ida32_lib_path}")
     message(STATUS "32-bit IDA library found - building both 32-bit and 64-bit plugins")
     set(BUILD_32BIT_PLUGIN TRUE)
     add_library(${PROJECT_NAME} SHARED ${PONCE_SOURCE_FILES} ${PONCE_HEADER_FILES})
@@ -52,31 +66,38 @@ endif()
 # Look for dependencies #
 #                       # 
 
-# Look for IDA SDK 
-set(IDASDK_ROOT_DIR "" CACHE PATH "Path to directory idasdk7X where you extracted idasdk7X.zip")
-
-if(NOT IDASDK_ROOT_DIR)
-	message(FATAL_ERROR "You should set IDASDK_ROOT_DIR to the IDA SDK path")
-endif()
-
-set(IDA_INCLUDE_DIR ${IDASDK_ROOT_DIR}/include)
-
 # IDA SDK libs.
 if(WIN32)
 	set(idasdk_ea32 "${IDASDK_ROOT_DIR}/lib/x64_win_vc_32/ida.lib")
-	set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_win_vc_64/ida.lib")
+    if(EXISTS "${IDASDK_ROOT_DIR}/lib/x64_win_64/ida.lib")
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_win_64/ida.lib")
+    else()
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_win_vc_64/ida.lib")
+    endif()
 elseif(APPLE)
 	set(idasdk_ea32 "${IDASDK_ROOT_DIR}/lib/x64_mac_gcc_32/libida.dylib")
-	set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_mac_gcc_64/libida64.dylib")
+    if(EXISTS "${IDASDK_ROOT_DIR}/lib/x64_mac_64/libida.dylib")
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_mac_64/libida.dylib")
+    elseif(EXISTS "${IDASDK_ROOT_DIR}/lib/x64_mac_clang_64/libida.dylib")
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_mac_clang_64/libida.dylib")
+    else()
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_mac_gcc_64/libida64.dylib")
+    endif()
 elseif(UNIX) # APPLE is also UNIX, so it MUST be before this elseif().
 	set(idasdk_ea32 "${IDASDK_ROOT_DIR}/lib/x64_linux_gcc_32/libida.so")
-	set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_linux_gcc_64/libida64.so")
+    if(EXISTS "${IDASDK_ROOT_DIR}/lib/x64_linux_64/libida.so")
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_linux_64/libida.so")
+    elseif(EXISTS "${IDASDK_ROOT_DIR}/lib/x64_linux_gcc_64/libida.so")
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_linux_gcc_64/libida.so")
+    else()
+        set(idasdk_ea64 "${IDASDK_ROOT_DIR}/lib/x64_linux_gcc_64/libida64.so")
+    endif()
 	set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
 else()
 	message(FATAL_ERROR "Unsupported system type: ${CMAKE_SYSTEM_NAME}")
 endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin" AND sdk_version LESS 900)
 	if (USE_CLANG)
 		# IDA libs are built with clang from IDA 7.3
 		SET(CMAKE_C_COMPILER /usr/bin/clang)
@@ -87,6 +108,10 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		SET(CMAKE_C_COMPILER /usr/bin/gcc)
 		SET(CMAKE_CXX_COMPILER /usr/bin/g++)
 	endif()
+endif()
+
+if(NOT EXISTS "${idasdk_ea64}")
+    message(FATAL_ERROR "Missing IDA SDK library: ${idasdk_ea64}")
 endif()
 
 # Find Triton
@@ -231,9 +256,11 @@ if(IDA_INSTALLED_DIR)
 			)
 		endif()
 		
-		add_custom_command(TARGET ${PROJECT_NAME}64 POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Debug/${PROJECT_NAME}64.pdb ${IDA_INSTALLED_DIR}/plugins/Ponce64.pdb
-			COMMENT "Created ${IDA_INSTALLED_DIR}/plugins/${PROJECT_NAME}64.${PLUGIN_EXTENSION}"
-		)
+        # Release builds do not generate a PDB unless debug information is enabled.
+        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+            add_custom_command(TARGET ${PROJECT_NAME}64 POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PDB_FILE:${PROJECT_NAME}64> ${IDA_INSTALLED_DIR}/plugins/Ponce64.pdb
+            )
+        endif()
 	endif()
 endif()

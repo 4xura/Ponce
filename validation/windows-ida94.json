@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-09",
+  "sdk_version": 940,
+  "compiler": "MSVC 19.44.35228",
+  "dll_sha256": "53c574cc3fd6697dddca54225cd7bc6f1595404b45bf2539aa646dd43d5110b5",
+  "dependencies": [
+    "ida.dll",
+    "KERNEL32.dll",
+    "dbghelp.dll"
+  ],
+  "architecture_log": [
+    "Ponce selected x86 for the 32-bit input database",
+    "Ponce selected x86-64 for the 64-bit input database"
+  ],
+  "tests": [
+    {
+      "kernel_version": "9.4",
+      "database_bits": 32,
+      "plugin_loaded": true,
+      "gui": true,
+      "actions": [
+        "Ponce:action_chooser_add_constrain",
+        "Ponce:action_chooser_comment",
+        "Ponce:banner",
+        "Ponce:clean",
+        "Ponce:create_snapshot",
+        "Ponce:delete_snapshot",
+        "Ponce:enable_disable_tracing",
+        "Ponce:negate_and_inject",
+        "Ponce:negate_inject_restore",
+        "Ponce:restore_snapshot",
+        "Ponce:run_until_symbolic_branch",
+        "Ponce:show_SymbolicVarsWindows",
+        "Ponce:show_config",
+        "Ponce:solve_formula_sub",
+        "Ponce:taint_symbolize_memory",
+        "Ponce:taint_symbolize_register",
+        "Ponce:unload"
+      ],
+      "action_registration_checked": true,
+      "passed": true
+    },
+    {
+      "kernel_version": "9.4",
+      "database_bits": 64,
+      "plugin_loaded": true,
+      "gui": true,
+      "actions": [
+        "Ponce:action_chooser_add_constrain",
+        "Ponce:action_chooser_comment",
+        "Ponce:banner",
+        "Ponce:clean",
+        "Ponce:create_snapshot",
+        "Ponce:delete_snapshot",
+        "Ponce:enable_disable_tracing",
+        "Ponce:negate_and_inject",
+        "Ponce:negate_inject_restore",
+        "Ponce:restore_snapshot",
+        "Ponce:run_until_symbolic_branch",
+        "Ponce:show_SymbolicVarsWindows",
+        "Ponce:show_config",
+        "Ponce:solve_formula_sub",
+        "Ponce:taint_symbolize_memory",
+        "Ponce:taint_symbolize_register",
+        "Ponce:unload"
+      ],
+      "action_registration_checked": true,
+      "passed": true
+    }
+  ],
+  "not_tested": [
+    "Debugger tracing",
+    "Taint propagation",
+    "Symbolic solving",
+    "Snapshot restore",
+    "ARM runtime",
+    "Linux and macOS"
+  ]
+}

@@ -156,23 +156,28 @@ int tritonize(ea_t pc, thid_t threadID)
 
 bool ponce_set_triton_architecture() {
 #if IDA_SDK_VERSION >= 900
-    // In SDK 9.0+, ph is accessed via PH macro or get_ph() function
-    #define ph PH
+    const auto &processor = PH;
+    const bool is64 = inf_is_64bit();
+    const bool is32 = inf_is_32bit_exactly();
+#else
+    const auto &processor = ph;
+    const bool is64 = ph.use64();
+    const bool is32 = ph.use32();
 #endif
-    if (ph.id == PLFM_386) {
-        if (ph.use64())
+    if (processor.id == PLFM_386) {
+        if (is64)
             tritonCtx.setArchitecture(triton::arch::ARCH_X86_64);
-        else if (ph.use32())
+        else if (is32)
             tritonCtx.setArchitecture(triton::arch::ARCH_X86);
         else {
             msg("[e] Wrong architecture\n");
             return false;
         }
     }
-    else if (ph.id == PLFM_ARM) {
-        if (ph.use64())
+    else if (processor.id == PLFM_ARM) {
+        if (is64)
             tritonCtx.setArchitecture(triton::arch::ARCH_AARCH64);
-        else if (ph.use32())
+        else if (is32)
             tritonCtx.setArchitecture(triton::arch::ARCH_ARM32);
         else {
             msg("[e] Wrong architecture\n");
@@ -183,9 +188,9 @@ bool ponce_set_triton_architecture() {
         msg("[e] Architecture not supported by Ponce\n");
         return false;
     }
-#if IDA_SDK_VERSION >= 900
-    #undef ph
-#endif
+    msg("[+] Ponce selected %s for the %d-bit input database\n",
+        processor.id == PLFM_386 ? (is64 ? "x86-64" : "x86") : (is64 ? "AArch64" : "ARM32"),
+        is64 ? 64 : 32);
     return true;
 }
 

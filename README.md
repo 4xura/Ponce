@@ -10,6 +10,66 @@
 
 # Ponce
 
+## IDA 9.4 Windows port
+
+This fork builds Ponce against the public IDA SDK **9.4** on Windows x64.
+One `Ponce64.dll` supports both 32-bit and 64-bit input binaries in IDA's
+unified executable. Triton, Capstone, and Z3 are linked statically.
+
+This branch starts from [YuHuanTin's IDA 9.2 compatibility patch](https://github.com/illera88/Ponce/pull/145).
+Database-based architecture detection follows the migration identified in
+[shuimu5418's IDA 9.1 port](https://github.com/illera88/Ponce/pull/144) and
+[jexxor's IDA 9.3 fork](https://github.com/jexxor/Ponce).
+The original authors' license and history are preserved.
+
+### Build and install on Windows
+
+Install Git and Visual Studio 2022 with the **Desktop development with C++**
+workload (including CMake). From this repository, run:
+
+```powershell
+./scripts/build-ida94.ps1
+```
+
+The script downloads pinned SDK and vcpkg revisions into `.deps/` and builds
+`build-ida94/Release/Ponce64.dll`. The initial dependency build takes several
+minutes. To install into an existing IDA installation:
+
+```powershell
+./scripts/build-ida94.ps1 -IdaDirectory 'C:\path\to\ida-pro-9.4'
+```
+
+Restart IDA and open an x86/x64 or ARM binary. Ponce's initial configuration
+opens on first use; its actions appear under **Edit > Ponce**.
+To create an installation archive including dependency licenses, run
+`./scripts/package-ida94.ps1` after the build.
+The retained upstream documentation below describes the original releases;
+their IDA 7.x/8.x binaries are not the build produced by this branch.
+
+### Validation
+
+`scripts/smoke-ida94.py` checks the running IDA version, plugin loading,
+database bitness, and (in the graphical executable) registered Ponce actions. Run it in autonomous IDA on
+disposable copies of 32-bit and 64-bit inputs:
+
+```powershell
+idat.exe -A '-Sscripts/smoke-ida94.py result.json' sample.exe
+```
+
+The text executable `idat` checks loading; its GUI action APIs are stubs.
+Use `ida.exe` with the same arguments to check GUI action registration.
+Loading and action registration are smoke tests. Debugger tracing, taint
+propagation, symbolic solving, and snapshot restore require separate runtime
+checks before treating the port as fully validated. Linux and macOS builds
+are not validated by this Windows branch.
+
+On 2026-10-09, this port compiled with MSVC 19.44 against SDK 940 and passed
+GUI smoke tests in IDA 9.4 with both 32-bit and 64-bit Windows PE inputs.
+Both runs selected the correct Triton architecture, detected Hex-Rays 9.4,
+and registered all 17 Ponce actions. The DLL imports only `ida.dll`,
+`KERNEL32.dll`, and `dbghelp.dll`. Details are recorded in
+[`validation/windows-ida94.json`](validation/windows-ida94.json).
+
 Ponce \(pronounced _\[ 'poN θe \]_ pon-they \) is an IDA Pro plugin that provides users the ability to perform taint analysis and symbolic execution over binaries in an easy and intuitive fashion. With Ponce you are one click away from getting all the power from cutting edge symbolic execution. Entirely written in C/C++.
 
 ### Why?
