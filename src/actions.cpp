@@ -607,13 +607,33 @@ action_desc_t action_IDA_show_expressionsWindow = ACTION_DESC_LITERAL(
     157); //Optional: the action icon (shows when in menus/toolbars)
 
 
+// IDA updates registered chooser actions for other chooser windows too.
+// Their selection indices must never be used to index Ponce's variable table.
+static bool has_valid_symbolic_selection(const action_ctx_base_t *ctx)
+{
+    if (ctx == nullptr || ponce_table_chooser == nullptr
+        || ctx->widget == nullptr || ctx->chooser_selection.empty()
+        || ctx->widget != find_widget(ponce_table_chooser->title))
+        return false;
+
+    for (const auto index : ctx->chooser_selection) {
+        if (index >= ponce_table_chooser->table_item_list.size())
+            return false;
+    }
+    return true;
+}
+
 struct ah_action_chooser_add_constrain_t : public action_handler_t
 {
     virtual int idaapi activate(action_activation_ctx_t* ctx)
     {
+        if (!has_valid_symbolic_selection(ctx))
+            return 0;
         int upper_limit_int, lower_limit_int;
         bool upper_set = false, lower_set = false;
         int res = ask_constrain(ctx->chooser_selection, &upper_limit_int, &lower_limit_int);
+        if (!has_valid_symbolic_selection(ctx))
+            return 0;
 
         // Let's clean the previous constrains if they exist
         for (const auto& index : ctx->chooser_selection) {
@@ -662,8 +682,7 @@ struct ah_action_chooser_add_constrain_t : public action_handler_t
     {
         update_action_label(ctx->action, "Set constraint to symbolic variable");
 
-        if (!ponce_table_chooser || 
-            ctx->chooser_selection.empty() ||
+        if (!has_valid_symbolic_selection(ctx) ||
             cmdOptions.use_tainting_engine)
             return AST_DISABLE;
 
@@ -697,8 +716,12 @@ struct ah_action_chooser_comment_t : public action_handler_t
 {
     virtual int idaapi activate(action_activation_ctx_t* ctx)
     {
+        if (!has_valid_symbolic_selection(ctx))
+            return 0;
         qstring response;
         if (ask_str(&response, 3, "New comment")) {
+            if (!has_valid_symbolic_selection(ctx))
+                return 0;
             for (const auto& index : ctx->chooser_selection) {
                 auto list_item = ponce_table_chooser->table_item_list.at(index);
                 tritonCtx.getSymbolicVariable(list_item.id)->setComment(std::string(response.c_str()));
@@ -715,8 +738,7 @@ struct ah_action_chooser_comment_t : public action_handler_t
     {
         update_action_label(ctx->action, "Set comment to symbolic variable");
 
-        if (!ponce_table_chooser ||
-            ctx->chooser_selection.empty() ||
+        if (!has_valid_symbolic_selection(ctx) ||
             cmdOptions.use_tainting_engine)
             return AST_DISABLE;
 

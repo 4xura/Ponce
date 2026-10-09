@@ -70,6 +70,16 @@ and registered all 17 Ponce actions. The DLL imports only `ida.dll`,
 `KERNEL32.dll`, and `dbghelp.dll`. Details are recorded in
 [`validation/windows-ida94.json`](validation/windows-ida94.json).
 
+The subsequent live MCP check exposed an inherited chooser-context bug:
+with Ponce's variable table open, its comment/constraint action updates could
+index that table using a selection from another chooser. An empty variable
+table then caused an uncaught `std::out_of_range` exception and terminated IDA.
+The port now checks the owning widget and every selected row before updating
+or activating these actions. The row-rendering callback also rejects invalid
+indices. `scripts/test-variables-window.py` reproduced the crash with a
+one-row unrelated chooser before the fix, and passed afterward with both
+32-bit and 64-bit inputs, including refresh, close, and reopen.
+
 Ponce \(pronounced _\[ 'poN θe \]_ pon-they \) is an IDA Pro plugin that provides users the ability to perform taint analysis and symbolic execution over binaries in an easy and intuitive fashion. With Ponce you are one click away from getting all the power from cutting edge symbolic execution. Entirely written in C/C++.
 
 ### Why?

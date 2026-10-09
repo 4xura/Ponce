@@ -27,6 +27,9 @@ try:
     result["action_registration_checked"] = result["gui"]
     if result["gui"]:
         assert "Ponce:banner" in result["actions"], "Ponce actions were not registered"
+        ida_kernwin.process_ui_action("Ponce:show_SymbolicVarsWindows")
+        result["symbolic_variables_window"] = ida_kernwin.find_widget("Ponce Symbolic Variables") is not None
+        assert result["symbolic_variables_window"], "Symbolic-variable window did not open"
     result["passed"] = True
     exit_code = 0
 except Exception as error:

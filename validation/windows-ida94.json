@@ -2,7 +2,7 @@
   "date": "2026-10-09",
   "sdk_version": 940,
   "compiler": "MSVC 19.44.35228",
-  "dll_sha256": "53c574cc3fd6697dddca54225cd7bc6f1595404b45bf2539aa646dd43d5110b5",
+  "dll_sha256": "20344fa92be8a38fd95d2f8d5ead9d7e28b1569750ee5a53cce0054cff34643c",
   "dependencies": [
     "ida.dll",
     "KERNEL32.dll",
@@ -75,5 +75,23 @@
     "Snapshot restore",
     "ARM runtime",
     "Linux and macOS"
-  ]
+  ],
+  "chooser_regression": {
+    "bug": "Variable-table action handlers used foreign chooser selection indices",
+    "original_exit_code": -1073740791,
+    "original_exception": "0xc0000409 FAST_FAIL_FATAL_APP_EXIT, uncaught std::out_of_range",
+    "red_phase": "switching_to_foreign_chooser",
+    "fixed_64bit": {
+      "passed": true,
+      "phase": "complete",
+      "functions_ready": true,
+      "current_widget": "Ponce regression foreign chooser"
+    },
+    "fixed_32bit": {
+      "passed": true,
+      "phase": "complete",
+      "functions_ready": true,
+      "current_widget": "Ponce regression foreign chooser"
+    }
+  }
 }
