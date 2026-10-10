@@ -33,11 +33,11 @@ both 32-bit and 64-bit input programs in IDA 9.4.
 Maintainers can prepare versioned release assets with:
 
 ```powershell
-./scripts/package-ida94.ps1 -Version v0.3.7-ida94.1
+./scripts/package-ida94.ps1 -Version v0.3.8
 ```
 
 The resulting files in `dist/` are `Ponce64.dll`,
-`ponce-v0.3.7-ida94.1-win.zip`, and `SHA256SUMS.txt`.
+`ponce-v0.3.8-win.zip`, and `SHA256SUMS.txt`.
 
 ### Build and install on Windows
 
