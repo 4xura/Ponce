@@ -204,13 +204,16 @@ elseif (UNIX AND NOT APPLE)
 		set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-ffunction-sections -fdata-sections" )
 		set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE "-s -Wl,--gc-sections")
 		target_compile_definitions(${PROJECT_NAME} PRIVATE __LINUX__ USE_DANGEROUS_FUNCTIONS)
-		SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES PREFIX "")
+		set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX ""
+			BUILD_WITH_INSTALL_RPATH TRUE INSTALL_RPATH "$ORIGIN/..")
 	endif()
 	set_target_properties(${PROJECT_NAME}64 PROPERTIES COMPILE_FLAGS "-ffunction-sections -fdata-sections" )
 	set_target_properties(${PROJECT_NAME}64 PROPERTIES LINK_FLAGS_RELEASE "-s -Wl,--gc-sections")
 	target_compile_definitions(${PROJECT_NAME}64 PRIVATE __LINUX__ USE_DANGEROUS_FUNCTIONS)
 	# Prevent creating ponce binaries as libPonce.so but do Ponce.so
-	SET_TARGET_PROPERTIES(${PROJECT_NAME}64 PROPERTIES PREFIX "")
+	# Resolve IDA from the installation above plugins/, not the SDK's link stub.
+	set_target_properties(${PROJECT_NAME}64 PROPERTIES PREFIX ""
+		BUILD_WITH_INSTALL_RPATH TRUE INSTALL_RPATH "$ORIGIN/..")
 	set(PLUGIN_EXTENSION so)
 endif()
 

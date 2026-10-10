@@ -10,10 +10,10 @@
 
 # Ponce
 
-## IDA 9.4 Windows port
+## IDA 9.4 port
 
-This fork builds Ponce against the public IDA SDK **9.4** on Windows x64.
-One `Ponce64.dll` supports both 32-bit and 64-bit input binaries in IDA's
+This fork builds Ponce against the public IDA SDK **9.4** on Windows and Linux x64.
+One `Ponce64.dll` (Windows) or `Ponce64.so` (Linux) supports both 32-bit and 64-bit input binaries in IDA's
 unified executable. Triton, Capstone, and Z3 are linked statically.
 
 This branch starts from [YuHuanTin's IDA 9.2 compatibility patch](https://github.com/illera88/Ponce/pull/145).
@@ -63,6 +63,49 @@ To create an installation archive including dependency licenses, run
 The retained upstream documentation below describes the original releases;
 their IDA 7.x/8.x binaries are not the build produced by this branch.
 
+### Build and verify on Linux
+
+Install Git, a C++17 compiler, CMake, Ninja, Python 3, curl, zip, and unzip.
+Build with the same pinned SDK and dependency ports as the Windows build:
+
+```bash
+./scripts/build-ida94.sh
+```
+
+The output is `build-ida94-linux/Ponce64.so`. Triton, Capstone, and Z3 are
+linked statically. The first build compiles these dependencies and takes
+several minutes. Set `PARALLEL` to control build concurrency (default: 8).
+The Linux build applies a small overlay patch to the pinned Triton port to
+include its integer and hash headers explicitly, as required by GCC 16.
+To build and install into your existing IDA 9.4 directory:
+
+```bash
+./scripts/build-ida94.sh /path/to/ida-pro-9.4
+```
+
+Restart IDA after installation. To verify loading, GUI action registration,
+the variable chooser regression, and symbolic execution on owned 32-bit and
+64-bit Linux ELF probes:
+
+```bash
+python3 scripts/test-ida94-linux.py /path/to/ida-pro-9.4
+```
+
+This runner uses a temporary IDA installation view, a separate user profile,
+and Qt's offscreen platform. It reuses your existing license acceptance state.
+It only runs the included arithmetic probes and saves JSON results and logs
+under `build-ida94-linux/validation-*/`. Your regular IDA profile is unchanged.
+IDA must have working IDAPython/PySide6 and its local Linux debugger installed.
+
+On 2026-10-10, the Linux build passed all eight checks on this fork's local
+IDA 9.4 installation: console loading, GUI loading with all 17 actions,
+the variable chooser regression, and debugger-backed symbolic execution,
+each with both 32-bit and 64-bit ELF probes. Both solver runs returned
+`SymVar_0 = 0x23` (35) for `input + 7 == 42`. The installed plugin also passed
+a GUI smoke test with the existing installation's plugins present.
+Details and coverage limits are recorded in
+[`validation/linux-ida94.json`](validation/linux-ida94.json).
+
 ### Validation
 
 `scripts/smoke-ida94.py` checks the running IDA version, plugin loading,
@@ -77,8 +120,7 @@ The text executable `idat` checks loading; its GUI action APIs are stubs.
 Use `ida.exe` with the same arguments to check GUI action registration.
 Loading and action registration are smoke tests; the end-to-end symbolic
 execution results are recorded below. Dedicated taint-mode and snapshot
-tests remain outstanding. Linux and macOS builds are not validated by this
-Windows branch.
+tests remain outstanding. macOS builds are not validated by this branch.
 
 ### Verified symbolic execution
 

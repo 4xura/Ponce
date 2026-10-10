@@ -132,7 +132,9 @@ try:
         assert ea != ida_idaapi.BADADDR, "Probe symbol missing: " + name
         addresses[name] = ea
     result["addresses"] = {name: hex(ea) for name, ea in addresses.items()}
-    assert ida_dbg.load_debugger("win32", False), "Local Windows debugger unavailable"
+    debugger = "linux" if os.name == "posix" else "win32"
+    result["debugger"] = debugger
+    assert ida_dbg.load_debugger(debugger, False), "Local debugger unavailable: " + debugger
     ida_dbg.set_debugger_options(ida_dbg.DOPT_ENTRY_BPT)
     for name in ("ponce_entry", "ponce_true", "ponce_false"):
         ida_dbg.del_bpt(addresses[name])

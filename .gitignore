@@ -3,6 +3,8 @@
 .vscode/
 .deps/
 dist/
+__pycache__/
+*.pyc
 
 *.db
 *.i64

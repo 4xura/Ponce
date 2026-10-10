@@ -23,10 +23,19 @@ try:
     assert result["kernel_version"].startswith("9.4"), result
     assert result["plugin_loaded"], "Ponce64 did not load"
     # idat implements GUI action functions as stubs; enumeration is meaningful
-    # only in ida.exe. The console test verifies version and DLL loading.
+    # only in the graphical executable. The console test verifies version and loading.
     result["action_registration_checked"] = result["gui"]
     if result["gui"]:
-        assert "Ponce:banner" in result["actions"], "Ponce actions were not registered"
+        expected_actions = {
+            "Ponce:action_chooser_add_constrain", "Ponce:action_chooser_comment",
+            "Ponce:banner", "Ponce:clean", "Ponce:create_snapshot", "Ponce:delete_snapshot",
+            "Ponce:enable_disable_tracing", "Ponce:negate_and_inject", "Ponce:negate_inject_restore",
+            "Ponce:restore_snapshot", "Ponce:run_until_symbolic_branch",
+            "Ponce:show_SymbolicVarsWindows", "Ponce:show_config", "Ponce:solve_formula_sub",
+            "Ponce:taint_symbolize_memory", "Ponce:taint_symbolize_register", "Ponce:unload",
+        }
+        missing_actions = expected_actions - set(result["actions"])
+        assert not missing_actions, "Ponce actions missing: " + repr(sorted(missing_actions))
         ida_kernwin.process_ui_action("Ponce:show_SymbolicVarsWindows")
         result["symbolic_variables_window"] = ida_kernwin.find_widget("Ponce Symbolic Variables") is not None
         assert result["symbolic_variables_window"], "Symbolic-variable window did not open"

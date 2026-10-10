@@ -1,0 +1,271 @@
+{
+  "date": "2026-10-10",
+  "ida_version": "9.4",
+  "sdk_version": 940,
+  "compiler": "c++ (GCC) 16.2.1 20260810",
+  "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.44",
+  "so_sha256": "950dd21c3f4e612e6c247f47fae22dce63ed2f86fbb1713f7e157541f6a3823f",
+  "pins": {
+    "sdkVersion": "9.4.0-sdk.1",
+    "sdkCommit": "2a9143f2f4abd7f54fe20d1e40fb68391d19c4cb",
+    "vcpkgCommit": "0699a19d0c6386247ce50d4dedbb8217d484d536"
+  },
+  "triplet": "x64-linux-static-release",
+  "linux_changes": [
+    "Triton overlay: explicitly include cstdint and functional in modesEnums.hpp and use std::uint64_t",
+    "Plugin RUNPATH uses $ORIGIN/.. instead of the build-time IDA SDK stub directory"
+  ],
+  "runtime_dependencies": [
+    "libida.so",
+    "libstdc++.so.6",
+    "libm.so.6",
+    "libgcc_s.so.1",
+    "libc.so.6",
+    "ld-linux-x86-64.so.2"
+  ],
+  "tests": [
+    {
+      "test": "console-smoke",
+      "bits": 64,
+      "exit_code": 0,
+      "result": {
+        "kernel_version": "9.4",
+        "database_bits": 64,
+        "plugin_loaded": true,
+        "gui": false,
+        "actions": [],
+        "action_registration_checked": false,
+        "passed": true
+      }
+    },
+    {
+      "test": "gui-smoke",
+      "bits": 64,
+      "exit_code": 0,
+      "result": {
+        "kernel_version": "9.4",
+        "database_bits": 64,
+        "plugin_loaded": true,
+        "gui": true,
+        "actions": [
+          "Ponce:action_chooser_add_constrain",
+          "Ponce:action_chooser_comment",
+          "Ponce:banner",
+          "Ponce:clean",
+          "Ponce:create_snapshot",
+          "Ponce:delete_snapshot",
+          "Ponce:enable_disable_tracing",
+          "Ponce:negate_and_inject",
+          "Ponce:negate_inject_restore",
+          "Ponce:restore_snapshot",
+          "Ponce:run_until_symbolic_branch",
+          "Ponce:show_SymbolicVarsWindows",
+          "Ponce:show_config",
+          "Ponce:solve_formula_sub",
+          "Ponce:taint_symbolize_memory",
+          "Ponce:taint_symbolize_register",
+          "Ponce:unload"
+        ],
+        "action_registration_checked": true,
+        "symbolic_variables_window": true,
+        "passed": true
+      }
+    },
+    {
+      "test": "chooser-regression",
+      "bits": 64,
+      "exit_code": 0,
+      "result": {
+        "passed": true,
+        "phase": "complete",
+        "functions_ready": true,
+        "current_widget": "Ponce regression foreign chooser"
+      }
+    },
+    {
+      "test": "symbolic-execution",
+      "bits": 64,
+      "exit_code": 0,
+      "result": {
+        "passed": true,
+        "phase": "complete",
+        "expected_solution": 35,
+        "database_bits": 64,
+        "addresses": {
+          "ponce_entry": "0x401000",
+          "ponce_input": "0x403030",
+          "ponce_branch": "0x40100d",
+          "ponce_true": "0x40100f",
+          "ponce_false": "0x401016"
+        },
+        "debugger": "linux",
+        "initial_input": 1,
+        "symbolize_action_dispatch": false,
+        "symbolic_variable": [
+          "0",
+          "SymVar_0",
+          "0x403030",
+          "",
+          "1",
+          "",
+          ""
+        ],
+        "native_arithmetic_result": 8,
+        "trace_summary": "BP Instructions traced: 3 Symbolic instructions: 4 Symbolic conditions: 1 Time: 97 secs",
+        "solve_screen_ea": "0x40100d",
+        "solve_widget": "IDA View-A",
+        "solve_action_dispatch": false,
+        "solver_output": " - SymVar_0: 0x23 (#)",
+        "solver_value": 35
+      }
+    },
+    {
+      "test": "console-smoke",
+      "bits": 32,
+      "exit_code": 0,
+      "result": {
+        "kernel_version": "9.4",
+        "database_bits": 32,
+        "plugin_loaded": true,
+        "gui": false,
+        "actions": [],
+        "action_registration_checked": false,
+        "passed": true
+      }
+    },
+    {
+      "test": "gui-smoke",
+      "bits": 32,
+      "exit_code": 0,
+      "result": {
+        "kernel_version": "9.4",
+        "database_bits": 32,
+        "plugin_loaded": true,
+        "gui": true,
+        "actions": [
+          "Ponce:action_chooser_add_constrain",
+          "Ponce:action_chooser_comment",
+          "Ponce:banner",
+          "Ponce:clean",
+          "Ponce:create_snapshot",
+          "Ponce:delete_snapshot",
+          "Ponce:enable_disable_tracing",
+          "Ponce:negate_and_inject",
+          "Ponce:negate_inject_restore",
+          "Ponce:restore_snapshot",
+          "Ponce:run_until_symbolic_branch",
+          "Ponce:show_SymbolicVarsWindows",
+          "Ponce:show_config",
+          "Ponce:solve_formula_sub",
+          "Ponce:taint_symbolize_memory",
+          "Ponce:taint_symbolize_register",
+          "Ponce:unload"
+        ],
+        "action_registration_checked": true,
+        "symbolic_variables_window": true,
+        "passed": true
+      }
+    },
+    {
+      "test": "chooser-regression",
+      "bits": 32,
+      "exit_code": 0,
+      "result": {
+        "passed": true,
+        "phase": "complete",
+        "functions_ready": true,
+        "current_widget": "Ponce regression foreign chooser"
+      }
+    },
+    {
+      "test": "symbolic-execution",
+      "bits": 32,
+      "exit_code": 0,
+      "result": {
+        "passed": true,
+        "phase": "complete",
+        "expected_solution": 35,
+        "database_bits": 32,
+        "addresses": {
+          "ponce_entry": "0x8049000",
+          "ponce_input": "0x804b028",
+          "ponce_branch": "0x804900d",
+          "ponce_true": "0x804900f",
+          "ponce_false": "0x8049016"
+        },
+        "debugger": "linux",
+        "initial_input": 1,
+        "symbolize_action_dispatch": false,
+        "symbolic_variable": [
+          "0",
+          "SymVar_0",
+          "0x804b028",
+          "",
+          "1",
+          "",
+          ""
+        ],
+        "native_arithmetic_result": 8,
+        "trace_summary": "BP Instructions traced: 3 Symbolic instructions: 4 Symbolic conditions: 1 Time: 101 secs",
+        "solve_screen_ea": "0x804900d",
+        "solve_widget": "IDA View-A",
+        "solve_action_dispatch": false,
+        "solver_output": " - SymVar_0: 0x23 (#)",
+        "solver_value": 35
+      }
+    }
+  ],
+  "installed_plugin_smoke": {
+    "kernel_version": "9.4",
+    "database_bits": 64,
+    "plugin_loaded": true,
+    "gui": true,
+    "actions": [
+      "Ponce:action_chooser_add_constrain",
+      "Ponce:action_chooser_comment",
+      "Ponce:banner",
+      "Ponce:clean",
+      "Ponce:create_snapshot",
+      "Ponce:delete_snapshot",
+      "Ponce:enable_disable_tracing",
+      "Ponce:negate_and_inject",
+      "Ponce:negate_inject_restore",
+      "Ponce:restore_snapshot",
+      "Ponce:run_until_symbolic_branch",
+      "Ponce:show_SymbolicVarsWindows",
+      "Ponce:show_config",
+      "Ponce:solve_formula_sub",
+      "Ponce:taint_symbolize_memory",
+      "Ponce:taint_symbolize_register",
+      "Ponce:unload"
+    ],
+    "action_registration_checked": true,
+    "symbolic_variables_window": true,
+    "passed": true
+  },
+  "covered": [
+    "IDA 9.4 console and GUI loading on 32-bit and 64-bit ELF inputs",
+    "All 17 Ponce GUI actions and symbolic variable window",
+    "Variable chooser foreign selection, refresh, close, and reopen regression",
+    "Local Linux debugger integration on owned x86 and x86-64 probes",
+    "One-byte memory symbolization, four symbolic instructions, and one symbolic condition",
+    "Native SMT solve handler returned 35 for input + 7 == 42 in both architectures",
+    "Installed plugin smoke with the existing installation plugin directory"
+  ],
+  "outside_test": [
+    "Normal context-menu popup generation",
+    "Solution injection",
+    "Snapshot restore",
+    "Dedicated taint mode",
+    "ARM runtime",
+    "Interactive GUI rendering",
+    "Other Linux distributions/toolchain versions"
+  ],
+  "notes": [
+    "GUI sessions used Qt offscreen and a temporary IDA user profile",
+    "Branch metadata was supplied directly to the native solve action, as in the Windows test",
+    "The trace summary time label is inherited from Ponce and is not a performance measurement",
+    "The installed-directory smoke passed; unrelated installed Python plugins logged missing yara, finger_sdk, and keystone modules in the temporary profile"
+  ],
+  "raw_evidence_directory": "build-ida94-linux/validation-nh3kqghg"
+}
