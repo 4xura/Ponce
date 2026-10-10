@@ -22,6 +22,23 @@ Database-based architecture detection follows the migration identified in
 [jexxor's IDA 9.3 fork](https://github.com/jexxor/Ponce).
 The original authors' license and history are preserved.
 
+### Windows release downloads
+
+The IDA 9.4 Windows release contains `Ponce64.dll` and an installation ZIP
+with the same DLL, `INSTALL.txt`, licenses, checksums, and validation evidence.
+The ZIP follows the upstream version-folder layout: `Ponce_ida94/Ponce64.dll`.
+Copy that DLL into your IDA 9.4 `plugins` directory. The single binary handles
+both 32-bit and 64-bit input programs in IDA 9.4.
+
+Maintainers can prepare versioned release assets with:
+
+```powershell
+./scripts/package-ida94.ps1 -Version v0.3.7-ida94.1
+```
+
+The resulting files in `dist/` are `Ponce64.dll`,
+`ponce-v0.3.7-ida94.1-win.zip`, and `SHA256SUMS.txt`.
+
 ### Build and install on Windows
 
 Install Git and Visual Studio 2022 with the **Desktop development with C++**
