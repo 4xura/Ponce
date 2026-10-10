@@ -58,10 +58,40 @@ idat.exe -A '-Sscripts/smoke-ida94.py result.json' sample.exe
 
 The text executable `idat` checks loading; its GUI action APIs are stubs.
 Use `ida.exe` with the same arguments to check GUI action registration.
-Loading and action registration are smoke tests. Debugger tracing, taint
-propagation, symbolic solving, and snapshot restore require separate runtime
-checks before treating the port as fully validated. Linux and macOS builds
-are not validated by this Windows branch.
+Loading and action registration are smoke tests; the end-to-end symbolic
+execution results are recorded below. Dedicated taint-mode and snapshot
+tests remain outstanding. Linux and macOS builds are not validated by this
+Windows branch.
+
+### Verified symbolic execution
+
+On 2026-10-10, the installed DLL passed an end-to-end debugger test with both
+32-bit and 64-bit owned Windows probes. Ponce symbolized a one-byte input,
+traced four symbolic instructions, and recorded the conditional branch for
+`input + 7 == 42`. The native input was initially `1` (the result was `8`),
+and Ponce's actual SMT solve handler returned `SymVar_0 = 0x23`, or `35`,
+for the alternate branch. This verifies debugger integration, symbolic input,
+expression propagation, path constraints, and solving on the basic probes.
+The test supplies branch metadata to the native solve action directly;
+context-menu popup generation, solution injection, snapshots, and ARM runtime
+remain outside this test.
+
+To reproduce with Visual Studio C++ tools and Ponce installed in IDA 9.4:
+
+```powershell
+./scripts/test-symbolic-execution.ps1 -IdaDirectory 'C:\path\to\ida-pro-9.4'
+```
+
+This builds the owned probes in a new directory under `build-ida94/`, runs
+separate autonomous IDA debugger sessions, and saves JSON results and logs.
+It does not run the binary currently open in your interactive IDA session.
+
+Ponce uses **dynamic symbolic execution**. To use it interactively, select
+symbolic mode in **Edit > Ponce > Show config**, start the program with IDA's
+debugger, pause before the calculation of interest, and symbolize an input
+memory region or register. Trace execution through a conditional branch,
+then use Ponce's branch-solving actions. The variable window lists symbolic
+inputs; an empty list before you symbolize anything is expected.
 
 On 2026-10-09, this port compiled with MSVC 19.44 against SDK 940 and passed
 GUI smoke tests in IDA 9.4 with both 32-bit and 64-bit Windows PE inputs.

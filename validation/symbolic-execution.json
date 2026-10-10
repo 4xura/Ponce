@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-10",
+  "ida_version": "9.4",
+  "dll_sha256": "20344fa92be8a38fd95d2f8d5ead9d7e28b1569750ee5a53cce0054cff34643c",
+  "test": "Owned arithmetic probe: input + 7 == 42",
+  "tests": [
+    {
+      "passed": true,
+      "phase": "complete",
+      "expected_solution": 35,
+      "database_bits": 32,
+      "addresses": {
+        "ponce_entry": "0x401005",
+        "ponce_input": "0x404000",
+        "ponce_branch": "0x40101d",
+        "ponce_true": "0x40101f",
+        "ponce_false": "0x401025"
+      },
+      "initial_input": 1,
+      "symbolize_action_dispatch": false,
+      "symbolic_variable": [
+        "0",
+        "SymVar_0",
+        "0x404000",
+        "",
+        "1",
+        "",
+        ""
+      ],
+      "native_arithmetic_result": 8,
+      "trace_summary": "BP Instructions traced: 4 Symbolic instructions: 4 Symbolic conditions: 1 Time: 101 secs",
+      "solve_screen_ea": "0x40101d",
+      "solve_widget": "IDA View-A",
+      "solve_action_dispatch": false,
+      "solver_output": " - SymVar_0: 0x23 (#)",
+      "solver_value": 35
+    },
+    {
+      "passed": true,
+      "phase": "complete",
+      "expected_solution": 35,
+      "addresses": {
+        "ponce_entry": "0x140001005",
+        "ponce_input": "0x140004000",
+        "ponce_branch": "0x14000101d",
+        "ponce_true": "0x14000101f",
+        "ponce_false": "0x140001025"
+      },
+      "initial_input": 1,
+      "symbolize_action_dispatch": false,
+      "symbolic_variable": [
+        "0",
+        "SymVar_0",
+        "0x140004000",
+        "",
+        "1",
+        "",
+        ""
+      ],
+      "native_arithmetic_result": 8,
+      "trace_summary": "BP Instructions traced: 4 Symbolic instructions: 4 Symbolic conditions: 1 Time: 101 secs",
+      "solve_screen_ea": "0x14000101d",
+      "solve_widget": "IDA View-A",
+      "solve_action_dispatch": false,
+      "solver_output": " - SymVar_0: 0x23 (#)",
+      "solver_value": 35,
+      "database_bits": 64
+    }
+  ],
+  "covered": [
+    "Local Windows debugger integration",
+    "One-byte memory symbolization",
+    "Four symbolic instructions",
+    "One symbolic branch constraint",
+    "Native Ponce SMT solver returned 35"
+  ],
+  "outside_test": [
+    "Normal context-menu popup generation",
+    "Solution injection",
+    "Snapshot restore",
+    "Dedicated taint mode",
+    "ARM runtime"
+  ]
+}

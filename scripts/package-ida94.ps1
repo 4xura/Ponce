@@ -11,6 +11,7 @@ New-Item -ItemType Directory -Path (Join-Path $package 'licenses') -Force | Out-
 Copy-Item -LiteralPath $Binary -Destination (Join-Path $package 'Ponce64.dll')
 Copy-Item -LiteralPath (Join-Path $repository 'LICENSE'),(Join-Path $repository 'README.md') -Destination $package
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'dependencies.json') -Destination $package
+Copy-Item -LiteralPath (Join-Path $repository 'validation') -Destination $package -Recurse -Force
 foreach ($library in @('triton', 'capstone', 'z3')) {
     $copyright = Join-Path $VcpkgDirectory "installed/x64-windows-static-release/share/$library/copyright"
     Copy-Item -LiteralPath $copyright -Destination (Join-Path $package "licenses/$library.txt")

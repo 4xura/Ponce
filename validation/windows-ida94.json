@@ -69,9 +69,8 @@
     }
   ],
   "not_tested": [
-    "Debugger tracing",
-    "Taint propagation",
-    "Symbolic solving",
+    "Dedicated taint mode",
+    "Solution injection",
     "Snapshot restore",
     "ARM runtime",
     "Linux and macOS"
@@ -93,5 +92,6 @@
       "functions_ready": true,
       "current_widget": "Ponce regression foreign chooser"
     }
-  }
+  },
+  "symbolic_execution_evidence": "symbolic-execution.json"
 }
