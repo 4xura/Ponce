@@ -22,25 +22,50 @@ Database-based architecture detection follows the migration identified in
 [jexxor's IDA 9.3 fork](https://github.com/jexxor/Ponce).
 The original authors' license and history are preserved.
 
-### IDA 9.4 release downloads
+### Install on Windows or Linux
 
 The [Ponce for IDA 9.4 release](https://github.com/4xura/Ponce/releases/tag/ida-9.4)
-provides `ponce-ida9.4-win.zip` and `ponce-ida9.4-linux.zip`.
-Each archive contains the plugin, installation instructions, licenses, and checksums.
-Extract `Ponce_ida94/Ponce64.dll` on Windows or `Ponce_ida94/Ponce64.so` on Linux
-into your IDA 9.4 `plugins` directory. Each plugin handles both 32-bit and 64-bit
-input programs in IDA 9.4.
+provides ready-to-use plugins for **IDA Pro 9.4**. Each archive contains the plugin,
+installation instructions, licenses, and checksums. You do not need to build from
+source to install the release.
 
-Maintainers can prepare versioned release assets with:
+| Platform | Download | Plugin inside the archive |
+| --- | --- | --- |
+| Windows x64 | [ponce-ida9.4-win.zip](https://github.com/4xura/Ponce/releases/download/ida-9.4/ponce-ida9.4-win.zip) | `Ponce_ida94/Ponce64.dll` |
+| Linux x64 | [ponce-ida9.4-linux.zip](https://github.com/4xura/Ponce/releases/download/ida-9.4/ponce-ida9.4-linux.zip) | `Ponce_ida94/Ponce64.so` |
+
+#### Windows
+
+1. Close IDA and download the Windows ZIP above.
+2. Extract the ZIP and copy `Ponce_ida94/Ponce64.dll` into your IDA 9.4 `plugins` directory.
+3. Restart IDA, open a binary, and find the plugin under **Edit > Ponce**.
+
+For example, from the directory containing the downloaded ZIP, using PowerShell:
 
 ```powershell
-./scripts/package-ida94.ps1 -Version ida9.4
+Expand-Archive -Path .\ponce-ida9.4-win.zip -DestinationPath .\ponce-ida9.4-win
+Copy-Item .\ponce-ida9.4-win\Ponce_ida94\Ponce64.dll 'C:\path\to\ida-pro-9.4\plugins\'
 ```
 
-The resulting files in `dist/` are `Ponce64.dll`,
-`ponce-ida9.4-win.zip`, and `SHA256SUMS.txt`. On Linux, run
-`python3 scripts/package-ida94-linux.py --version ida9.4` to prepare
-`dist/ponce-ida9.4-linux.zip`.
+Replace the example destination with your IDA installation directory.
+
+#### Linux
+
+1. Close IDA and download the Linux ZIP above.
+2. Extract the ZIP and copy `Ponce_ida94/Ponce64.so` into your IDA 9.4 `plugins` directory.
+3. Restart IDA, open a binary, and find the plugin under **Edit > Ponce**.
+
+For example, from the directory containing the downloaded ZIP:
+
+```bash
+unzip ponce-ida9.4-linux.zip -d ponce-ida9.4-linux
+cp ponce-ida9.4-linux/Ponce_ida94/Ponce64.so /path/to/ida-pro-9.4/plugins/
+```
+
+Replace the example destination with your IDA installation directory.
+Each platform's single plugin handles both 32-bit and 64-bit input programs.
+Triton, Capstone, and Z3 are linked statically; no separate installation of those
+libraries is required. Ponce opens its initial configuration on first use.
 
 ### Build and install on Windows
 
@@ -61,12 +86,9 @@ minutes. To install into an existing IDA installation:
 
 Restart IDA and open an x86/x64 or ARM binary. Ponce's initial configuration
 opens on first use; its actions appear under **Edit > Ponce**.
-To create an installation archive including dependency licenses, run
-`./scripts/package-ida94.ps1` after the build.
-The retained upstream documentation below describes the original releases;
-their IDA 7.x/8.x binaries are not the build produced by this branch.
+To package the build, see [Prepare release archives](#prepare-release-archives).
 
-### Build and verify on Linux
+### Build and install on Linux
 
 Install Git, a C++17 compiler, CMake, Ninja, Python 3, curl, zip, and unzip.
 Build with the same pinned SDK and dependency ports as the Windows build:
@@ -108,6 +130,27 @@ each with both 32-bit and 64-bit ELF probes. Both solver runs returned
 a GUI smoke test with the existing installation's plugins present.
 Details and coverage limits are recorded in
 [`validation/linux-ida94.json`](validation/linux-ida94.json).
+
+### Prepare release archives
+
+After building, maintainers can package the plugin and dependency licenses.
+
+On Windows:
+
+```powershell
+./scripts/package-ida94.ps1 -Version ida9.4
+```
+
+This produces `dist/ponce-ida9.4-win.zip`, plus a standalone `Ponce64.dll`
+and `SHA256SUMS.txt` in `dist/`.
+
+On Linux:
+
+```bash
+python3 scripts/package-ida94-linux.py --version ida9.4
+```
+
+This produces `dist/ponce-ida9.4-linux.zip`.
 
 ### Validation
 
@@ -182,13 +225,14 @@ We addressed these needs by creating Ponce, an IDA plugin that implements symbol
 
 ### Installation
 
-Ponce works with both x86 and x64 binaries in any IDA version &gt;= 7.0. Installing the plugin is as simple as copying the appropiate files from the [latest builds](https://github.com/illera88/Ponce/releases/latest) to the `plugins\` folder in your IDA installation directory.
-
-Make sure you use the Ponce binary compiled for your IDA version to avoid any incompatibilities.
+For this fork's IDA 9.4 release, follow [Install on Windows or Linux](#install-on-windows-or-linux)
+above. Use the plugin for your host operating system; the same plugin supports
+both x86 and x64 input binaries.
 
 ### OS Support
 
-Ponce works on Windows, Linux and OSX natively!
+This fork provides verified Windows x64 and Linux x64 builds for IDA 9.4.
+Upstream also supports macOS; this fork does not currently provide a macOS release.
 
 ### Use cases
 
@@ -310,7 +354,9 @@ Juan Ponce de León \(1474 – July 1521\) was a Spanish explorer and conquistad
 
 #### Can Ponce be used to analyze Windows, OS X and Linux binaries?
 
-Yes, you can natively use Ponce in IDA for Windows or remotely attach to a Linux or OS X box and use it. In the next Ponce version we will natively support Ponce for Linux and OS X IDA versions.
+This fork runs natively in IDA 9.4 on Windows and Linux. The release plugins
+support x86 and x64 inputs; debugger-based execution depends on the debugger
+available for the target platform. This fork does not provide a macOS host build.
 
 #### How many instructions per second can handle Ponce?
 
